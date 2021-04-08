@@ -11,7 +11,7 @@
           <div class="links">
               <!-- If user is logged in show 'Logout' and other buttons -->
               <div v-if="user">
-                  <span>Hi {{ user.displayName }}</span>
+                  <span>Hiiiii {{ user.displayName }}</span>
                   <button @click="handleClick">Logout</button>
               </div>
               
