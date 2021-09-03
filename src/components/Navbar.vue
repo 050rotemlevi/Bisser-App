@@ -5,14 +5,13 @@
       <!-- Nav section -->
       <nav>
           <!-- Image logo -->
-          <router-link :to="{ name: 'Home' }"><img src="@/assets/icon.png"></router-link>
+          <router-link :to="{ name: 'Home' }"><img src="@/assets/logo.png"></router-link>
           
           <!-- Links div vlass -->
           <div class="links">
-              <!-- If user is logged in show 'Logout' and other buttons -->
+              <!-- If user is logged in show relevance  -->
               <div v-if="user">
-                  <span>Hiiiiii {{ user.displayName }}</span>
-                  <button @click="handleClick">Logout</button>
+                  <Options />
               </div>
               
               <!-- Else - show 'Signup' and 'Login' buttons -->
@@ -29,12 +28,19 @@
 <!-- Script -->
 <script>
 // Imports
+import getCollection from '@/composables/getCollection.js'
 import { useRouter } from 'vue-router'
 import useLogout from '@/composables/useLogout'
 import getUser from '@/composables/getUser'
+import { computed } from 'vue'
+import Options from '@/components/Options.vue'
+
 
 // Export default
 export default {
+
+    components: { Options },
+
     // Setup
     setup() {
 
@@ -42,7 +48,7 @@ export default {
         const router = useRouter()
         const { logout, error, isPending } = useLogout()
         const { user } = getUser()
-
+        
         // Handle click function for logout bottun
         const handleClick = async () => {
             // Logout the current user
@@ -50,7 +56,8 @@ export default {
             // Route to login page
             router.push({ name: 'Login'})
         }
-        
+
+    
         // Return necessary attributes and functions
         return { error, isPending, handleClick, user }
     }

@@ -1,8 +1,18 @@
 <!-- Template  -->
 <template>
+    <!-- Search Bar -->
+    <div class="d-flex">
+      <input class="form-control me-2" type="search" placeholder="Type Service or Owner name ..." aria-label="Search" v-model="searchValue">
+    </div>
+
+    <!-- If search bar not empty -->
+    <div v-if="searchValue">
       <!-- Run loop over services document -->
       <div v-for="service in services" :key="service.id">
           <!-- Create a router link for each service to 'ServiceDetails' view component -->
+        
+        <!-- Call 'searchCheck' function to check if the document exists -->
+        <div v-if="searchCheck(service.name, service.displayName)">
 
             <!-- If the service is a single -->
           <div v-if="service.type == 'single' ">
@@ -38,8 +48,12 @@
             </router-link>
           </div>
 
+          <!-- End of search div section -->
+        </div>
+
       <!-- End of loop -->
       </div>
+  </div>
 
 </template>
 
@@ -47,6 +61,7 @@
 <script>
 // Imports
 import getTimestampDate from '@/composables/getTimestampDate'
+import getCollection from '@/composables/getCollection'
 import { ref } from 'vue'
 
 // Export default
@@ -59,9 +74,22 @@ export default {
     setup(props) {
       // Get timestamp converte function
       const { timestampToDate } = getTimestampDate()
+
+      // Search value attribute
+      const searchValue = ref('')
+
+     // Search values check
+      const searchCheck = (serviceName, displayName) => {
+        
+        // Init attribute for the input and make lower case (Could be service name or owner name)
+        let searchInput = searchValue.value.toLowerCase()
+
+        // Return true or false if one of the value exists in services results
+        return serviceName.toLowerCase().includes(searchInput) || displayName.toLowerCase().includes(searchInput)
+      }
       
       // Return necessary function and attributes    
-      return { timestampToDate }
+      return { timestampToDate, searchValue, searchCheck }
     }
 
 }
@@ -100,14 +128,6 @@ export default {
     transition: all ease 0.2s;
     border-bottom: 1px dotted #bbb;
   }
- .form-style {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 1px 2px 3px rgba(50,50,50,0.05);
-    border: 1px solid  var(--secondary);
-    background: white;
-  }
+
   
 </style>

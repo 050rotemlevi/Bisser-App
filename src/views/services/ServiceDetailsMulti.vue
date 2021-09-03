@@ -1,13 +1,12 @@
 <!-- Template -->
 <template>
-    <!-- Check if service exists -->
+    <!-- If service is exists -->
     <div v-if="service" class="service">
         <!-- If service exists: show few details -->
-        <h4> {{ service.name }} </h4>
-        <h5>From {{ service.start }} | To {{ service.end }}</h5>
-        <h6>{{ service.day }} -  {{ timestampToDate(service.date) }} </h6>
-        <p>Created At: {{ timestampToDate(service.createdAt) }}</p>
-    
+        <h1> {{ service.day }} </h1>
+        <h2>From {{ service.start }} | To {{ service.end }}</h2>
+        <h4> {{ timestampToDate(service.date) }} </h4>
+
         <!-- Run a loop over all of the appointments from the array -->
         <div v-for="appointment in service.arr" :key="appointment.id">
             <!-- If userId is null thats mean that the current appointment slot is open -->
@@ -16,17 +15,15 @@
             </div>
             <!-- Else - the slot is not available, show details for owner only -->
             <div v-else>
-                <button disabled>{{appointment.start}} - {{appointment.end}}
-                    <div v-if="ownership">{{ appointment.userName }}
+                <button disabled>
+                    {{appointment.start}} - {{appointment.end}}
+                    <div v-if="ownership">{{ appointment.displayName }}
                     </div> 
                 </button>
             </div>
         </div>
-        
         <!-- If current user is the owner of the service - show delete button -->
         <button v-if="ownership" @click="handleDelete" class="delete">Delete</button>
-        <hr>
-
     </div>
 
 </template>
@@ -34,89 +31,93 @@
 <!-- Script -->
 <script>
 // Imports
-import getDocument from '@/composables/getDocument'
-import useDocument from '@/composables/useDocument'
-import useCollection from '@/composables/useCollection'
-import getUser from '@/composables/getUser'
-import { useRouter } from 'vue-router'
-import { computed } from 'vue'
-import { timestamp } from '@/firebase/config'
 import getTimestampDate from '@/composables/getTimestampDate'
+import useDocument from '@/composables/useDocument'
+import getDocument from '@/composables/getDocument'
+import useCollection from '@/composables/useCollection'
+import { timestamp } from '@/firebase/config'
+import { useRouter } from 'vue-router'
+import getUser from '@/composables/getUser'
+import { computed } from 'vue'
 
-
-
-// Export default
 export default {
-    // Props: the id of the service
-    props: ['id'],
 
-    components: {},
+    // Props
+    // id = document id, the current day
+    // fid = service document id
+    // 'service' -> fid -> 'days' -> id
+    props: ['id', 'fid'],
 
     // Setup
     setup(props) {
 
-        // Initialize imports
-        const { document: service } = getDocument('services', props.id)
-        const { error, deleteDoc, updateDoc } = useDocument('services', props.id)
-        const router = useRouter()
-        const { user } = getUser()
-        const { addDoc, isPending } = useCollection('users',user.value.uid,'appointments')
-        const { timestampToDate } = getTimestampDate()
+        // Current user logged
+        const { user } = getUser() 
+        const { document: main } = getDocument('services', props.fid)
+        const { document: service } = getDocument('services', props.fid, 'days', props.id)
+        const { error, updateDoc, deleteDoc } = useDocument('services', props.fid, 'days', props.id)
         
+        const router = useRouter()
+        const { addDoc } = useCollection('users',user.value.uid,'appointments')
+        const { timestampToDate } = getTimestampDate()
+
         // Computed function to check if the current user owned the current service
         // For allowing function and method on the current service (delete, edit etc)
         const ownership = computed(() => {
-            return service.value && user.value && user.value.uid == service.value.userId
+            return service.value && user.value && user.value.uid == main.value.userId
         })
-
+        
         // Handle click function for add appointment button
         const handleClick = async (appointment) => {
-                        
+
             // User appointment update
             let userUpdate = {
-                name: service.value.name,
-                date: service.value.date,
-                start: appointment.start,
-                end: appointment.end,
-                serviceId: props.id,
-                createdAt: timestamp()
+                'name': main.value.name,
+                'date': service.value.date,
+                'start': appointment.start,
+                'end': appointment.end,
+                'dayId': props.id,
+                'serviceId': props.fid,
+                'createdAt': timestamp()
             }
+
             // Add appointment document for user
             const res = await addDoc(userUpdate)
             
             // Appointment update for service array lists
             let appointmentUpdate = {
-                id: appointment.id,
-                start: appointment.start,
-                end: appointment.end,
-                userId: user.value.uid,
-                userName: user.value.displayName,
-                userDocId: res.id
+                'id': appointment.id,
+                'start': appointment.start,
+                'end': appointment.end,
+                'userId': user.value.uid,
+                'displayName': user.value.displayName,
+                'userDocId': res.id
             }
 
             // Update current array with the changes
             let arr = service.value.arr
             arr[appointment.id] = appointmentUpdate
 
+
             // Update document of service
             await updateDoc({
                 arr: [...arr]
             })
 
-
-            const { 'addDoc': addNotifictionDoc } = useCollection('users',service.value.userId,'notifications')
-
+            
+            const { 'addDoc': addNotifictionDoc } = useCollection('users', main.value.userId, 'notifications')
+            
             
             let notification = {
                 'userId': user.value.uid,
                 'displayName': user.value.displayName,
                 'createdAt': timestamp(),
                 'date': service.value.date,
-                'service': service.value.name, 
-                'message': user.value.displayName + " made an appointment in "+service.value.name+" from " + appointment.start + " to " + appointment.end,
+                'service': main.value.name, 
+                'message': user.value.displayName + " made an appointment in "+main.value.name+" from " + appointment.start + " to " + appointment.end,
                 'watched': false
             }
-
+            
             await addNotifictionDoc(notification)
         }
 
@@ -134,15 +135,16 @@ export default {
             
                     let notification = {
                         'userId': element.userId,
+                        'displayName': element.displayName,
                         'createdAt': timestamp(),
                         'date': service.value.date,
-                        'service': service.value.name, 
-                        'message': "The Service " + service.value.name + " in day " + service.value.day + " has been deleted!, you appointment canceled!",
+                        'service': main.value.name, 
+                        'message': "The Service " + main.value.name + " in day " + service.value.day + " has been deleted!, you appointment canceled!",
                         'watched': false
                     }
                     
                     addNotifictionDoc(notification)
-                    
+                
                     // Delete the doc
                     userDocDelete()
                 }
@@ -154,17 +156,19 @@ export default {
             
             // At the end, check if no error exists, if no move to 'Home' page
             if(!error.value) {
-                router.push({ name: 'Home' })
+                router.push({ name: 'MultiServiceDetails', params: {id: props.fid}})
             }
         }
-        
-        return { service, handleClick, ownership, handleDelete, timestampToDate}
+
+        return { error, service, timestampToDate, handleClick, handleDelete, ownership }
     }
+
 }
 </script>
 
-<!-- Style -->
-<style>
+
+<!-- Style  -->
+<style scoped>
     .service {
         margin-top: 10px;
         margin: 0 auto;

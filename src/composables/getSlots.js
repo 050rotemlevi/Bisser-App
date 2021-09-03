@@ -1,5 +1,3 @@
-// Initialize array for appointments 
-const arr = []
 
 // Function that Convere String Hour to Integer value (13:45 -> 1345)
 const converteStringHourToInteger = (hour) => {
@@ -18,7 +16,7 @@ const converteStringHourToInteger = (hour) => {
 }
 
 // Function to converte minutes to number value for calculating slots
-// 15 minutes = 25% from an hour so its will return number 25
+// 15 minutes = 25% from an hour so it will return number 25
 const minutesToNumber = (minutes) => {
     return (minutes / 60 ) * 100
 }
@@ -29,6 +27,7 @@ const minutesToNumber = (minutes) => {
 const slotsAmount = (startC, endC, timeC) => {
     return (endC - startC) / timeC
 }
+
 // Function to converte from decimal number to String hour
 // '8.25' -> "08:15"
 function getHour(n) {
@@ -53,15 +52,17 @@ function getHour(n) {
 
 function fillArrayWithValues(start, end, time) {
 
+    var arr = []
+
     // Converte start and end time to integer number (08:00 -> 800 | 11:30 -> 1130)
-    let _start = converteStringHourToInteger(start);
-    let _end = converteStringHourToInteger(end);
+    var _start = converteStringHourToInteger(start);
+    var _end = converteStringHourToInteger(end);
 
     // Get time unit in integer (15 Minutes = 25)
-    let _time = minutesToNumber(time);
+    var _time = minutesToNumber(time);
 
     // Calculate slots numbers
-    let _slotsNumber = slotsAmount(_start, _end, _time);
+    var _slotsNumber = slotsAmount(_start, _end, _time);
 
     // Fill the array currently
     for (let x = 0; x < _slotsNumber; x++) {
@@ -77,12 +78,14 @@ function fillArrayWithValues(start, end, time) {
 
         _start = _start + _time;
     }
+
+    return arr
 }
 
 // Get Slots function
 const getSlots = (start, end, time) => {
-    fillArrayWithValues(start, end, time) 
-    return arr  
+    
+    return fillArrayWithValues(start, end, time)   
 }
 
 // Export default

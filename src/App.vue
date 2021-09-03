@@ -7,7 +7,6 @@
   <!-- Function bar - visible for users only -->
   <FunctionBar v-if="user"/>
 
-  
   <!-- Router view section -->
   <router-view/>
   

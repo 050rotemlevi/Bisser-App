@@ -21,6 +21,7 @@
 
 import { ref } from 'vue'
 import useSignup from '@/composables/useSignup'
+import useCollection from '@/composables/useCollection'
 import { useRouter } from 'vue-router'
 
     export default {
@@ -34,9 +35,20 @@ import { useRouter } from 'vue-router'
             const router = useRouter()
             const {error, signup, isPending} = useSignup()
 
+            
+
             const handleSubmit = async () => {
-                const res = await signup(email.value, password.value, displayName.value)
+               // Sign up the new user
+               const res = await signup(email.value, password.value, displayName.value)
+                
+                // If no errors
                 if(!error.value){
+                    
+                    // Add the new user to users collection with is own uid
+                    const { addDoc } = useCollection('users', res.user.uid)
+                    // Add the the user necessary values
+                    await addDoc({'displayName': displayName.value, 'email': email.value})
+                    // Push to home
                     router.push({ name: 'Home'})
                 }
             }

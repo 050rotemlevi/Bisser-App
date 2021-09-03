@@ -6,14 +6,22 @@
     <h4>Create New Service</h4>
     
     <!-- Inputs -->
-    <input type="text" required placeholder="Service Name" v-model="title">
+    <label>Service Name</label>
+    <input type="text" required v-model="title">
+    
+    <label>Date</label>
     <datepicker v-model="picked" />
-    <input type="text" placeholder="Start Time" v-model="start">
-    <input type="text" placeholder="End Time" v-model="end">
+    
+    
+    <label>Start</label>
+    <input type="time" name="appt" v-model="start" required>
+    
+    <label>End</label>
+    <input type="time" name="appt" v-model="end" required>
     
     <label for="customRange2" class="form-label">Time Slot</label>
-    <label>{{ time }} Minutes</label>
-    <input type="range" class="form-range" min="5" max="120" id="customRange2" v-model="time">
+    <p>{{ time }} Minutes</p>
+    <input type="range" class="form-range" min="5" max="120" step="5" id="customRange2" v-model="time">
 
   
     <!-- Error div for firebase error -->
@@ -24,12 +32,14 @@
     <button v-else disabled>Saving ...</button>
   
   </form>
+
 </template>
 
 <!-- Script  -->
 <script>
 // Imports
 import Datepicker from 'vue3-datepicker'
+import Calendar from 'primevue/calendar';
 import getSlots from '@/composables/getSlots'
 import getUser from '@/composables/getUser'
 import useCollection from '@/composables/useCollection'
@@ -39,7 +49,7 @@ import { ref } from 'vue'
 
 // Export default
 export default {
-    components: {Datepicker },
+    components: {Datepicker, Calendar },
 
     // Setup
     setup() {
@@ -55,19 +65,24 @@ export default {
         const { user } = getUser()
         const router = useRouter()
         const { error, addDoc, isPending } = useCollection('services')
+
+        // Help array with the week days for compare
+        const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                 
         // Handle Submit function
         const handleSubmit = async () => {
             // Create new 'service' object with necessary values
             const service = {
-              userId: user.value.uid,
-              displayName: user.value.displayName,
-              name: title.value,
-              date: picked.value,
-              start: start.value,
-              end: end.value,
-              createdAt: timestamp(),
-              arr: getSlots(start.value, end.value ,time.value)
+              'userId': user.value.uid,
+              'displayName': user.value.displayName,
+              'name': title.value,
+              'type': 'single',
+              'date': picked.value,
+              'day': weekday[picked.value.getDay()],
+              'start': start.value,
+              'end': end.value,
+              'createdAt': timestamp(),
+              'arr': getSlots(start.value, end.value ,time.value)
             }
 
             // Add the document and store the result in response (res = the created document id)
@@ -92,12 +107,12 @@ export default {
     background: white;
   }
   label {
-    font-size: 12px;
+    font-size: 10px;
     display: block;
-    margin-top: 30px;
   }
   button {
     margin-top: 20px;
 
   }
+
 </style>

@@ -2,7 +2,7 @@ import { ref, watchEffect } from "vue"
 import { projectFirestore } from "../firebase/config"
 
 // Get document function - must get a collection name to work with
-const getDocument = (collection, id) => {
+const getDocument = (collection, id, collection2, id2) => {
 
     // Initialize document and error attributes
     const document = ref(null)
@@ -10,6 +10,11 @@ const getDocument = (collection, id) => {
 
     // Initialize document reference attribute 
     let documentRef = projectFirestore.collection(collection).doc(id)
+
+    // If second collection and document id exists then get the inside document
+    if(collection2 && id2) {
+        documentRef = projectFirestore.collection(collection).doc(id).collection(collection2).doc(id2)
+    }
 
     // Set a listener to the current document using onSnapshot 
     const unsub = documentRef.onSnapshot((doc) => {

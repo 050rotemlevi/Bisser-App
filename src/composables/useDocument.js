@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { projectFirestore } from '../firebase/config'
 
 // Use decument for delete, edit etc a single document
-const useDocument = (collection, id) => {
+const useDocument = (collection, id, collection2, id2) => {
 
     // Initialize error and isPending attributes
     const error = ref(null)
@@ -10,6 +10,10 @@ const useDocument = (collection, id) => {
 
     // Initialize document reference to the collection and document id parameters
     let docRef = projectFirestore.collection(collection).doc(id)
+
+    if(collection2 && id2) {
+        docRef = projectFirestore.collection(collection).doc(id).collection(collection2).doc(id2)
+    }
 
     // Delete documnet function
     const deleteDoc = async () => {

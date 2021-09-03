@@ -13,8 +13,11 @@
       <!-- Button section: if 'isPending' true, show an disable 'loading' button  -->
       <button v-if="!isPending">Login</button>
       <button v-if="isPending" disabled>Loading ...</button>
+      
+      
 
   </form>
+
 
 </template>
 
@@ -25,8 +28,10 @@
     import { useRouter } from 'vue-router'
     import { ref } from 'vue'
 
+
     // Export default
     export default {
+        
         // Setup
         setup() {
 
@@ -36,6 +41,7 @@
 
             const router = useRouter()
 
+            const display = ref(false)
 
 
             // Login function and error, isPending attributes from 'useLogin.js'
@@ -55,7 +61,7 @@
             }
 
             // Return necessary function and attributes
-            return { email, password, handleSubmit, error, isPending }
+            return { email, password, handleSubmit, error, isPending, display }
         }
     }
 </script>
