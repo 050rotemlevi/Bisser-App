@@ -3,21 +3,13 @@
 
     <!-- Create new service button -->
     <div class="form-style">
-        
-        <div v-if="documents && documents.length==0" class="single">
-           <h5>You have no services!</h5>
-           <h6>Click 'Create' button to make you first one!</h6>
-        </div>
         <button class="create-btn" @click="handleClick">Create</button>
-
     </div>
     
     <!-- If error exists show error details -->
     <div v-if="error" class="error">
         <p> {{ error }}</p>
     </div>
-
-    
 
     <!-- Else - create 'ListView' component with services documents -->
     <div v-else>
@@ -33,7 +25,6 @@ import ListView from '@/components/ListView.vue'
 import getCollection from '@/composables/getCollection'
 import getUser from '@/composables/getUser'
 import { useRouter } from 'vue-router'
-import Dialog from 'primevue/dialog';
 
 // Export default
 export default {
@@ -80,14 +71,5 @@ export default {
         border: 1px solid  var(--secondary);
         background: white;
   }
-    .single {
-        text-align: center;
-        padding: 20px;
-        border-radius: 10px;
-        background: white;
-        max-width: 600px;
-        border-bottom: 1px dotted #bbb;
-        transition: all ease 0.2s;
 
-    }
 </style>

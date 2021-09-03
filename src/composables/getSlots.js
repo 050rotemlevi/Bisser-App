@@ -16,7 +16,7 @@ const converteStringHourToInteger = (hour) => {
 }
 
 // Function to converte minutes to number value for calculating slots
-// 15 minutes = 25% from an hour so it will return number 25
+// 15 minutes = 25% from an hour so its will return number 25
 const minutesToNumber = (minutes) => {
     return (minutes / 60 ) * 100
 }
@@ -27,7 +27,6 @@ const minutesToNumber = (minutes) => {
 const slotsAmount = (startC, endC, timeC) => {
     return (endC - startC) / timeC
 }
-
 // Function to converte from decimal number to String hour
 // '8.25' -> "08:15"
 function getHour(n) {

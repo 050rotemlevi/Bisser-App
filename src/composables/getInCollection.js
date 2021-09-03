@@ -2,31 +2,15 @@ import { ref, watchEffect } from "vue"
 import { projectFirestore } from "../firebase/config"
 
 // Get collection function - must get a collection name to work with
-const getCollection = (collection, id, collection2, quary) => {
+const getInCollection = (collection1, doc, collection2) => {
 
     // Initialize document and error attributes
     const documents = ref(null)
     const error = ref(null)
 
     // Initialize collection reference attribute in order by 'createdAt' value
-    let collectionRef = projectFirestore.collection(collection)
+    let collectionRef = projectFirestore.collection(collection1).doc(doc).collection(collection2).orderBy('date')
 
-    // To get a collection inside a document
-    if(id && collection2) {
-        if(collection2 == 'notifications'){
-            collectionRef = projectFirestore.collection(collection).doc(id).collection(collection2).orderBy('createdAt', 'desc')
-        }
-        else {
-            collectionRef = projectFirestore.collection(collection).doc(id).collection(collection2).orderBy('date')
-    
-        }
-    }
-
-    if(quary) {
-        collectionRef = collectionRef.where(...quary)
-    }
-
-    
 
     // Set a listener to the current collection using onSnapshot 
     const unsub = collectionRef.onSnapshot((snap) => {
@@ -36,7 +20,7 @@ const getCollection = (collection, id, collection2, quary) => {
 
         // Loop forEach over the collection 
         snap.docs.forEach(doc => {
-
+            
             // For each document get the data and check if 'createdAt' value is exists
             // If true add the current doc and its own id to the results array
             let msg = {
@@ -70,4 +54,4 @@ const getCollection = (collection, id, collection2, quary) => {
 }
 
 // Export default
-export default getCollection
+export default getInCollection

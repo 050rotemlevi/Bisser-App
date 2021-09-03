@@ -12,7 +12,6 @@
     <label>Date</label>
     <datepicker v-model="picked" />
     
-    
     <label>Start</label>
     <input type="time" name="appt" v-model="start" required>
     
@@ -39,7 +38,6 @@
 <script>
 // Imports
 import Datepicker from 'vue3-datepicker'
-import Calendar from 'primevue/calendar';
 import getSlots from '@/composables/getSlots'
 import getUser from '@/composables/getUser'
 import useCollection from '@/composables/useCollection'
@@ -49,7 +47,7 @@ import { ref } from 'vue'
 
 // Export default
 export default {
-    components: {Datepicker, Calendar },
+    components: {Datepicker },
 
     // Setup
     setup() {
@@ -109,6 +107,7 @@ export default {
   label {
     font-size: 10px;
     display: block;
+    margin-top: 10px;
   }
   button {
     margin-top: 20px;

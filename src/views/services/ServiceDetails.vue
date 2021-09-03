@@ -3,10 +3,9 @@
     <!-- Check if service exists -->
     <div v-if="service" class="service">
         <!-- If service exists: show few details -->
-        <h4> {{ service.name }} </h4>
-        <h5>From {{ service.start }} | To {{ service.end }}</h5>
-        <h6>{{ service.day }} -  {{ timestampToDate(service.date) }} </h6>
-        <p>Created At: {{ timestampToDate(service.createdAt) }}</p>
+        <h1> {{ service.name }} </h1>
+        <h2>From {{ service.start }} | To {{ service.end }}</h2>
+        <h4>{{ service.day }} -  {{ timestampToDate(service.date) }} </h4>
     
         <!-- Run a loop over all of the appointments from the array -->
         <div v-for="appointment in service.arr" :key="appointment.id">
@@ -23,10 +22,11 @@
             </div>
         </div>
         
+        <!-- CreatedAt date -->
+        <h5>Created At: {{ timestampToDate(service.createdAt) }}</h5>
+
         <!-- If current user is the owner of the service - show delete button -->
         <button v-if="ownership" @click="handleDelete" class="delete">Delete</button>
-        <hr>
-
     </div>
 
 </template>
@@ -43,14 +43,10 @@ import { computed } from 'vue'
 import { timestamp } from '@/firebase/config'
 import getTimestampDate from '@/composables/getTimestampDate'
 
-
-
 // Export default
 export default {
     // Props: the id of the service
     props: ['id'],
-
-    components: {},
 
     // Setup
     setup(props) {

@@ -22,7 +22,7 @@ import { ref } from 'vue'
 // Export default
 export default {
   name: 'Search',
-  components: { SearchListView },
+  components: {SearchListView},
 
   // Setup
   setup() {
