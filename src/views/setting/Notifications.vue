@@ -4,8 +4,6 @@
         <h3>Notifications</h3>
 
         <div v-for="notification in formattedDocuments" :key="notification.id">
-            
-            
             <h5>{{ notification.message }}</h5>
             <p>{{ notification.createdAt }}</p>
             <hr>

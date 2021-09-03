@@ -26,8 +26,6 @@ const getCollection = (collection, id, collection2, quary) => {
         collectionRef = collectionRef.where(...quary)
     }
 
-    
-
     // Set a listener to the current collection using onSnapshot 
     const unsub = collectionRef.onSnapshot((snap) => {
 

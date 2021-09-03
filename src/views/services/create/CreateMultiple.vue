@@ -11,7 +11,7 @@
       
       <!-- Inputs -->
       <input type="text" required placeholder="Service Name" v-model="title">
-      <input type="number" min="0" required placeholder="Time Cycle" v-model="timeCycle">
+      <input type="number" min="1" required placeholder="Time Cycle" v-model="timeCycle">
       
       <!-- Next button -->
       <div v-if="( title != '' && timeCycle != '')">

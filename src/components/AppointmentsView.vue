@@ -1,15 +1,15 @@
 <!-- Template -->
 <template>
 
-    <div v-if="documents && documents.length == 0">
-      <p class="single">You have no appointments!</p>
+    <div v-if="documents && documents.length == 0" class="single">
+      <p >You have no appointments!</p>
     </div>
 
     <div v-else>
       <!-- Run loop over the appointments array -->
       <div v-for="appointment in documents" :key="appointment.id">
         <!-- Show details for each appointment -->
-        <router-link :to="{ name: 'ServiceDetails', params: {id: appointment.serviceId}}">
+        <router-link :to="{ name: 'ServiceDetails', params: { id: appointment.serviceId }}">
           <div class=single @click="handleSingle(appointment)">
               <div class="info"> 
                   <h3>{{ appointment.name }}</h3>
@@ -19,7 +19,7 @@
           </div>
         </router-link>
       </div>
-
+      <br>
     </div>
     
 
@@ -57,8 +57,8 @@ export default {
 
 <!-- Style  -->
 <style scoped>
-.single {
-    display: flex;
+  .single {
+    text-align: center;
     padding: 20px;
     border-radius: 10px;
     background: white;
@@ -66,7 +66,7 @@ export default {
     border-bottom: 1px dotted #bbb;
     transition: all ease 0.2s;
     margin: 0 auto;
-    cursor: pointer;
+
   }
   .single:hover {
     box-shadow: 1px 2px 3px rgba(50,50,50,0.05);
