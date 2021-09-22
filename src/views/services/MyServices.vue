@@ -33,7 +33,7 @@ import ListView from '@/components/ListView.vue'
 import getCollection from '@/composables/getCollection'
 import getUser from '@/composables/getUser'
 import { useRouter } from 'vue-router'
-import Dialog from 'primevue/dialog';
+
 
 // Export default
 export default {

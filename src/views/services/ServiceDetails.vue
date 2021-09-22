@@ -4,25 +4,50 @@
     <div v-if="service" class="service">
         <!-- If service exists: show few details -->
         <h4> {{ service.name }} </h4>
-        <h5>From {{ service.start }} | To {{ service.end }}</h5>
+        <h5>Location: {{service.location}}</h5>
+        <h6>{{ service.start }} - {{ service.end }}</h6>
         <h6>{{ service.day }} -  {{ timestampToDate(service.date) }} </h6>
-        <p>Created At: {{ timestampToDate(service.createdAt) }}</p>
+        <h6>By {{ service.displayName }}</h6>
+
     
         <!-- Run a loop over all of the appointments from the array -->
         <div v-for="appointment in service.arr" :key="appointment.id">
+           
             <!-- If userId is null thats mean that the current appointment slot is open -->
-            <div v-if="!appointment.userId">
-                <button @click="handleClick(appointment)">{{appointment.start}} - {{appointment.end}}</button>
+            <div v-if="!appointment.userId && !limitCheck">
+                <button @click="handleClick(appointment)">{{appointment.start}} - {{appointment.end}} </button>
             </div>
-            <!-- Else - the slot is not available, show details for owner only -->
-            <div v-else>
-                <button disabled>{{appointment.start}} - {{appointment.end}}
-                    <div v-if="ownership">{{ appointment.userName }}
-                    </div> 
+            
+            <div v-else-if="checkUser(appointment) && !ownership">
+                <button @click="handleCancel(appointment)">{{appointment.start}} - {{appointment.end}}
+                    <div>{{ appointment.userName }}</div>
+                    <p class="click-to-cancel">Click to cancel</p>
                 </button>
+            </div>
+
+            <!-- Else - the slot is not available, show details for owner only -->
+            <div v-else-if="ownership">
+
+                <div v-if="appointment.userId">
+                    <button @click="handleCancel(appointment)">{{appointment.start}} - {{appointment.end}}
+                        <div>{{ appointment.userName }}</div>
+                        <p class="click-to-cancel">Click to cancel</p>
+                    </button>
+                </div>
+
+                <div v-else>
+                     <button @click="handleClick(appointment)">{{appointment.start}} - {{appointment.end}} </button>
+                </div>
+
+            </div>
+
+            <div v-else>
+                 <button disabled>{{appointment.start}} - {{appointment.end}} </button>
             </div>
         </div>
         
+        <br>
+        <p>Created At: {{ timestampToDate(service.createdAt) }}</p>
         <!-- If current user is the owner of the service - show delete button -->
         <button v-if="ownership" @click="handleDelete" class="delete">Delete</button>
         <hr>
@@ -43,8 +68,6 @@ import { computed } from 'vue'
 import { timestamp } from '@/firebase/config'
 import getTimestampDate from '@/composables/getTimestampDate'
 
-
-
 // Export default
 export default {
     // Props: the id of the service
@@ -60,14 +83,23 @@ export default {
         const { error, deleteDoc, updateDoc } = useDocument('services', props.id)
         const router = useRouter()
         const { user } = getUser()
-        const { addDoc, isPending } = useCollection('users',user.value.uid,'appointments')
+        const { document: userAppointment } = getDocument('users', user.value.uid, 'appointments', props.id)
+        const { addDoc, isPending } = useCollection('users',user.value.uid,'appointments', props.id)
         const { timestampToDate } = getTimestampDate()
-        
+
         // Computed function to check if the current user owned the current service
         // For allowing function and method on the current service (delete, edit etc)
         const ownership = computed(() => {
             return service.value && user.value && user.value.uid == service.value.userId
         })
+
+        const limitCheck = computed(() => {
+            return userAppointment.value
+        })
+
+        const checkUser = (appointment) => {
+            return appointment.userId == user.value.uid;
+        }
 
         // Handle click function for add appointment button
         const handleClick = async (appointment) => {
@@ -91,7 +123,7 @@ export default {
                 end: appointment.end,
                 userId: user.value.uid,
                 userName: user.value.displayName,
-                userDocId: res.id
+                userDocId: props.id
             }
 
             // Update current array with the changes
@@ -157,8 +189,50 @@ export default {
                 router.push({ name: 'Home' })
             }
         }
+
+        const handleCancel = async (appointment) => {
+             const {deleteDoc: userDocDelete } = useDocument('users', appointment.userId, 'appointments', appointment.userDocId)
+             userDocDelete()
+            
+            // Appointment update for service array lists
+            let appointmentUpdate = {
+                id: appointment.id,
+                start: appointment.start,
+                end: appointment.end,
+                userId: null,
+                userName: null,
+                userDocId: null
+            }
+
+            // Update current array with the changes
+            let arr = service.value.arr
+            arr[appointment.id] = appointmentUpdate
+
+            // Update document of service
+            await updateDoc({
+                arr: [...arr]
+            })
+
+
+            const { 'addDoc': addNotifictionDoc } = useCollection('users',service.value.userId,'notifications')
+
+            
+            let notification = {
+                'userId': user.value.uid,
+                'displayName': user.value.displayName,
+                'createdAt': timestamp(),
+                'date': service.value.date,
+                'service': service.value.name, 
+                'message': user.value.displayName + " canceled an appointment in "+service.value.name+" from " + appointment.start + " to " + appointment.end,
+                'watched': false
+            }
+
+            await addNotifictionDoc(notification)
+
+            location.reload();
+        }
         
-        return { service, handleClick, ownership, handleDelete, timestampToDate}
+        return { service, handleClick, ownership, handleDelete, timestampToDate, limitCheck , checkUser, handleCancel}
     }
 }
 </script>
@@ -177,4 +251,10 @@ export default {
         font-size: 16px;
         color: white;
     }
+    .click-to-cancel {
+        font-style: italic;
+        font-size: 12px;
+        color: crimson;
+    }
+
 </style>

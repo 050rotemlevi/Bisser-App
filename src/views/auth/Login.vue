@@ -28,7 +28,6 @@
     import { useRouter } from 'vue-router'
     import { ref } from 'vue'
 
-
     // Export default
     export default {
         
@@ -42,7 +41,6 @@
             const router = useRouter()
 
             const display = ref(false)
-
 
             // Login function and error, isPending attributes from 'useLogin.js'
             const { error, login, isPending } = useLogin()

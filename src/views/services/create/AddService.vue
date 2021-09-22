@@ -8,27 +8,37 @@
     <!-- Inputs -->
     <label>Service Name</label>
     <input type="text" required v-model="title">
+
+    <label>Location</label>
+    <input type="text" required v-model="location">
     
     <label>Date</label>
-    <datepicker v-model="picked" />
-    
-    
+
+    <datepicker
+    v-model="picked"
+    :disabledDates="{ dates: [disabledDate] }"/>
+
+  
     <label>Start</label>
     <input type="time" name="appt" v-model="start" required>
     
     <label>End</label>
     <input type="time" name="appt" v-model="end" required>
-    
+
+    <div v-if="end<start">
+      <p class="error">End time must be bigger then start time!</p>
+    </div>
+
     <label for="customRange2" class="form-label">Time Slot</label>
     <p>{{ time }} Minutes</p>
     <input type="range" class="form-range" min="5" max="120" step="5" id="customRange2" v-model="time">
 
-  
     <!-- Error div for firebase error -->
     <div class=error></div>
 
     <!-- Create button -->
-    <button v-if="!isPending">Create</button>
+    <button v-if="(start >= end)" disabled>Create</button>
+    <button v-else-if="!isPending">Create</button>
     <button v-else disabled>Saving ...</button>
   
   </form>
@@ -39,17 +49,17 @@
 <script>
 // Imports
 import Datepicker from 'vue3-datepicker'
-import Calendar from 'primevue/calendar';
 import getSlots from '@/composables/getSlots'
 import getUser from '@/composables/getUser'
 import useCollection from '@/composables/useCollection'
 import { timestamp } from '@/firebase/config'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
+import { add } from 'date-fns'
 
 // Export default
 export default {
-    components: {Datepicker, Calendar },
+    components: {Datepicker},
 
     // Setup
     setup() {
@@ -60,7 +70,9 @@ export default {
         const start = ref('')
         const end = ref('')
         const time = ref('60')
-
+        const location = ref()
+        const disabledDate = ref(add(new Date(), { days: -1 }))
+        
         // Imported attributes
         const { user } = getUser()
         const router = useRouter()
@@ -81,6 +93,7 @@ export default {
               'day': weekday[picked.value.getDay()],
               'start': start.value,
               'end': end.value,
+              'location': location.value,
               'createdAt': timestamp(),
               'arr': getSlots(start.value, end.value ,time.value)
             }
@@ -96,7 +109,7 @@ export default {
         }
 
         // Return necessary attributes and functions
-        return { title, picked, handleSubmit, isPending, start, end, time, error }
+        return { title, picked, handleSubmit, isPending, start, end, time, error, location, disabledDate }
     }
 }
 </script>

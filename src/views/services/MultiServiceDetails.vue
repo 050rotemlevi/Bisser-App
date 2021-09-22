@@ -2,7 +2,6 @@
 <template>
   <!-- Page section -->
   <div class="page">
-
       <!-- Loop on all of the days collection -->
       <div v-for="day in days" :key="day.id">
         <br>
@@ -25,7 +24,7 @@
 
     <!-- If current user is the owner of the service - show delete button -->
     <button v-if="ownership" @click="handleDelete" class="delete">Delete</button>
-  
+    <p>Created At: {{ timestampToDate(main.createdAt) }}</p>
   </div>
 </template>
 
@@ -70,7 +69,7 @@ export default {
       // Computed function to check if the current user owned the current service
       // For allowing function and method on the current service (delete, edit etc)
       const ownership = computed(() => {
-          return days.value && user.value && user.value.uid == main.value.userId
+          return days.value && user && user.value.uid == main.value.userId
       })
 
       // Handle Delete function

@@ -11,7 +11,8 @@
       
       <!-- Inputs -->
       <input type="text" required placeholder="Service Name" v-model="title">
-      <input type="number" min="1" required placeholder="Time Cycle" v-model="timeCycle">
+      <input type="number" min="1" required placeholder="Days Time Cycle" v-model="timeCycle">
+      <p class="guide">The amount of days that you want</p>
       
       <!-- Next button -->
       <div v-if="( title != '' && timeCycle != '')">
@@ -44,7 +45,7 @@
 
         </div>
         <button  @click="backLevel('2')" class="next"><span class="material-icons">arrow_back_ios</span> Back </button>
-        <button  @click="nextLevel('2')" class="next">Next <span class="material-icons">arrow_forward_ios</span></button>
+        <button v-if="userDayChooseCheck"  @click="nextLevel('2')" class="next">Next <span class="material-icons">arrow_forward_ios</span></button>
        
 
       </div>
@@ -118,6 +119,16 @@ export default {
         
         // User work days list
         const userDayChoose = ref([0,0,0,0,0,0,0])
+
+        const userDayChooseCheck = () => {
+          for(let x=0; x<7; x++){
+            if(userDayChoose[x] != 0) {
+              console.log(userDayChoose[x])
+              return true;
+            }
+            return false;
+          }
+        }
         
         // Current day button value
         const dayBtn = ref('')
@@ -243,7 +254,7 @@ export default {
                  onClickedAddDay, choosedDay, dayBtn, 
                  buttonShow,userDayChoose,
                  levelOne, levelTwo, levelThree,
-                 nextLevel, backLevel }
+                 nextLevel, backLevel, userDayChooseCheck }
     }
 }
 </script>
@@ -283,4 +294,8 @@ export default {
     text-align: center;
   }
 
+  .guide {
+    color: gray;
+    font-style: italic;
+  }
 </style>

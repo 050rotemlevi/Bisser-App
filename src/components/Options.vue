@@ -6,7 +6,7 @@
         <span v-if="notifications && notifications.length==0" class="material-icons" style="font-size: 28px" >notifications</span>
         
         <!-- Else - user have new notification then show red button with active -->
-        <span v-else class="material-icons" style="font-size: 28px; color:red;" >notifications_active</span>
+        <span v-else class="material-icons" style="font-size: 28px; color:red;" >notifications_active  </span>
         
     </router-link>
 

@@ -8,7 +8,7 @@
           <div class="links">
               <!-- If user is logged in show 'Logout' and other buttons -->
               <div v-if="user" >
-                  <router-link :to="{ name: 'Home'}">My Appointments</router-link>
+                  <router-link class=btnrl :to="{ name: 'Home'}">My Appointments</router-link>
                   <router-link :to="{ name: 'MyServices'}">My Services</router-link>
                   <router-link :to="{ name: 'Search'}">Search</router-link>
               </div>
@@ -29,6 +29,11 @@ export default {
     // Setup
     setup() {
         const { user } = getUser()
+
+        const btnChange = (btn) => {
+
+        }
+
         return { user }
     }
 }
@@ -56,10 +61,14 @@ export default {
     }
     nav .links a, button {
         margin-left: 16px;
-        font-size: 14px;
-        
-        font-weight: bold;
+        font-size: 16px;
     }
+    a:focus, a:valid {
+        font-weight: bold;
+        color: darkblue;
+        font-size: 20px;
+    }
+
     .link-sep {
         border-left: 1px solid #eee;
     }

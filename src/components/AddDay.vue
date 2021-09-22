@@ -4,9 +4,15 @@
     <div class="input-group mb-3">
       <input type="time" name="appt" v-model="start" required>
       <input type="time" name="appt" v-model="end" required>
-      <input type="number" class="form-control" aria-label="Text input with dropdown button" min="5" step="5" placeholder="Time" v-model="time">
-      <button type="button" class="btn btn-outline-secondary" @click="handleClick">Add</button>
+      
+    <div v-if="end<start">
+      <p class="error">End time must be bigger then start time!</p>
     </div>
+    <br>
+      <input type="number" class="form-control" aria-label="Text input with dropdown button" min="5" step="5" placeholder="Time" required v-model="time">
+      <button v-if="check" type="button" class="btn btn-outline-secondary" @click="handleClick">Add</button>
+    </div>
+
 </template>
 
 <!-- Script -->
@@ -28,6 +34,10 @@ export default {
         const time = ref('')
         const day = props.day
         
+        const check = () => {
+            return start != null && end != null && time != null && (start < end);
+        }
+
         const handleClick = () => {
             
             if(start.value && end.value ) {
@@ -43,7 +53,7 @@ export default {
             
         }
 
-        return {start, end, time, day, handleClick}
+        return {start, end, time, day, handleClick, check}
     }
 
 }

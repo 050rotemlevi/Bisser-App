@@ -2,7 +2,7 @@ import { ref } from "vue"
 import { projectFirestore } from "../firebase/config"
 
 // Use collection from adding document function - must get collection name
-const useCollection = (collection, id, collection2) => {
+const useCollection = (collection, id, collection2, id2) => {
 
     // Initialize 'error' attribute
     const error = ref(null)
@@ -17,8 +17,13 @@ const useCollection = (collection, id, collection2) => {
 
         // Try to add the document to the collection
         try{
+            if(id && collection2 && id2) {
+                const res = await projectFirestore.collection(collection).doc(id).collection(collection2).doc(id2).set(doc)
+                isPending.value = false
+                return res
+            }
             // If doc id and inside collection parameter exist
-            if(id && collection2) {
+            else if(id && collection2) {
                 const res = await projectFirestore.collection(collection).doc(id).collection(collection2).add(doc)
                 isPending.value = false
                 return res

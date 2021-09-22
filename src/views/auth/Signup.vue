@@ -3,9 +3,9 @@
   <form @submit.prevent="handleSubmit">
       <!-- Signup title and inputs -->
       <h3>Sign up</h3>
-      <input type="text" placeholder="Display Name" v-model="displayName">
-      <input type="email" placeholder="Email" v-model="email">
-      <input type="password" placeholder="Password" v-model="password">
+      <input type="text" required="required" placeholder="Display Name" v-model="displayName">
+      <input type="email" required="required" placeholder="Email" v-model="email">
+      <input type="password" required="required" placeholder="Password" v-model="password">
 
       <!-- Error message div -->
       <div v-if="error" class="error"> {{ error }}</div>

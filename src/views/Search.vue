@@ -9,7 +9,7 @@
   <div v-else>
     <SearchListView :services="documents" />
   </div>
-
+  
 </template>
 
 <!-- Script  -->
@@ -39,4 +39,17 @@ export default {
 }
 </script>
 
+<style>
+  .d-flex {
+    display: flex;
+    max-width: 600px;
+    align-items: center;
+    padding: 5px;
+    border-radius: 10px;
+    background: white;
+    margin: 0 auto;
+    transition: all ease 0.2s;
+    border-bottom: 1px dotted #bbb;
+  }
 
+</style>
