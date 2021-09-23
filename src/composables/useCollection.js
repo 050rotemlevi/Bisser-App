@@ -2,6 +2,9 @@ import { ref } from "vue"
 import { projectFirestore } from "../firebase/config"
 
 // Use collection from adding document function - must get collection name
+
+// add User CK - Delete Me
+
 const useCollection = (collection, id, collection2) => {
 
     // Initialize 'error' attribute
